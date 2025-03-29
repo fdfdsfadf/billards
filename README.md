@@ -10,10 +10,10 @@ A **classic 8-ball pool game** built using **HTML5, JavaScript, and CSS**. Play 
 - 🎯 **Cue Ball Aiming Guide** – Helps players aim their shots.
 
 ## 🚀 Demo
-🔗 **[Play Now](https://your-demo-link.com/)**
+🔗 **[Play Now](https://8-ball-pool-html-5.vercel.app/)**
 
 ## 📸 Screenshots
-![8Ball Pool](https://your-image-link.com)
+![8Ball Pool](https://github.com/user-attachments/assets/e869d275-fe94-49cc-b7c6-d46978a1daed)
 
 ## 🛠️ Tech Stack
 - **HTML5** (Canvas API)
