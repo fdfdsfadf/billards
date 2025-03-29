@@ -207,7 +207,6 @@ fg_api.prototype.adsModule = function() {
 
 		if (self.config.gameParams.show_initial === false) {
 			M.show_initial = false;
-			//M.adRequestCount = 0;
 		} else {
 			M.show_initial = self.config.ads.show_initial && !self.config.ads.off;
 		}
@@ -232,30 +231,8 @@ fg_api.prototype.adsModule = function() {
 
 				M.gam_sizes_mode = 0;
 				M.gam_demand_source = 0;
-				//M.dfp_ad_unit_code =
-				//	"/41567730/InGameInterstitial//" + self.config.aid + "//d0";
-
-				faZepto.getScript(
-					(self.debug || self.config.ads.debug)
-						? "https://imasdk.googleapis.com/js/sdkloader/ima3_debug.js"
-						: "https://imasdk.googleapis.com/js/sdkloader/ima3.js",
-					sdkLoadedCallback,
-					function() {
-						self.log("failed to load ima sdk");
-						sdkLoadedCallback();
-					}
-				);
-
-				// add ströer sdk for evaluation 
-				faZepto.getScript(
-					"//js.adscale.de/map.js",
-					function() {
-						self.log("ströer: sdk loaded");
-					},
-					function() {
-						self.log("ströer: failed to load sdk");
-					}
-				);
+				
+				sdkLoadedCallback();
 
 				break;
 			case "custom":
@@ -660,7 +637,6 @@ fg_api.prototype.adsModule = function() {
 
 		if (controlSpinner)
 			self.spinner.show();
-		// self.game.hideCanvas();
 
 		module.prototype.onAdsManagerLoaded = function(adsManagerLoadedEvent) {
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
@@ -730,11 +706,6 @@ fg_api.prototype.adsModule = function() {
 				case google.ima.AdEvent.Type.STARTED:
 					M.adDidLoad = true;
 
-					if (ad.isLinear() && M.adsManager.getRemainingTime() > 0) {
-						//self.tracking.trackEvent("Ad event", "DFP Video", adEvent.type);
-					} else {
-						//self.tracking.trackEvent("Ad event", "DFP", adEvent.type);
-					}
 					if (controlSpinner)
 						self.spinner.hide();
 
@@ -755,7 +726,6 @@ fg_api.prototype.adsModule = function() {
 					);
 					if (controlSpinner)
 						self.spinner.hide();
-					// self.game.showCanvas();
 					self.modal.close();
 					break;
 			}
@@ -777,7 +747,6 @@ fg_api.prototype.adsModule = function() {
 		};
 
 		module.prototype.onAdError = function(adErrorEvent) {
-			//self.tracking.trackEvent("Ad error event", "DFP", adErrorEvent.getError());
 			var adError = adErrorEvent.getError();
 			self.log(adError);
 			self.adapters.run("adEvent", "errored", adErrorEvent);
@@ -793,15 +762,6 @@ fg_api.prototype.adsModule = function() {
 
 			if (adError.getType() == google.ima.AdError.Type.AD_LOAD) {
 				self.log("ads module: ad load error detected");
-
-				// // try to show web interstitial instead, if error was fillrate related
-				// if (M.adRequestCount >= 1 &&
-				// 		self.interstitial &&
-				// 		self.interstitial.isEnabled() &&
-				// 		self.interstitial.hasCooledDown()) {
-				// 	self.log("ads module: attempt to load interstitial instead");
-				// 	return self.interstitial.showAd(closeAndResume, false);
-				// }	
 			}
 
 			closeAndResume();
@@ -1015,11 +975,6 @@ fg_api.prototype.adsModule = function() {
 			self.config.ads.npa ? "1" : "0"
 		);
 
-		// myAdTagUrl = myAdTagUrl.replace(
-		// 	"[gdpr]",
-		// 	"0"
-		// );
-
 		var adUnitID = M.getAdUnitID(adUnit);
 		if (typeof adUnitID == 'string' && adUnitID.length > 0) {
 			myAdTagUrl = myAdTagUrl + "&iu=" + adUnitID;
@@ -1050,19 +1005,11 @@ fg_api.prototype.adsModule = function() {
 			myAdTagUrl = myAdTagUrl + "&hl=" + language;
 		}
 
-		// if (locale != "") {
-		// 	myAdTagUrl = myAdTagUrl + "&cn=" + locale;
-		// }
-
 		if (vpos != "") {
 			myAdTagUrl = myAdTagUrl + "&vpos=" + vpos;
 		}
 
 		myAdTagUrl = myAdTagUrl + "&plcmt=1";
-
-		//if (M.adRequestCount == 0) {
-			//myAdTagUrl = myAdTagUrl + "&vpa=click";
-		//}
 
 		// overwrite ad tag in debugmode	
 		if (self.config.ads.debug) {	
@@ -1348,7 +1295,6 @@ fg_api.prototype.showInterstitialAd = function(eventId, callback) {
 	}
 
 	return Promise.resolve();
-	// return this.ads.showInterstitialAd(this.ads.floodProtect("Interstitial Ad", 1e3));
 };
 
 fg_api.prototype.showTeaser = function(callback) {
@@ -1525,17 +1471,6 @@ fg_api.prototype.rewardedadsModule = function() {
                     }
                 );
 
-            // // handle event: user canceled ad, no reward
-            // // attention! seems like this is called even if the user is granted
-            // // a reward. so don't use for reward determination atm.
-            // window.googletag.pubads().addEventListener(
-            //         "rewardedSlotCanceled",
-            //         function() {
-            //             self.log("rewarded slot canceled");
-            //             M.adDidShow = true;
-            //             M.initiateClosing();
-            //         }
-            //     );
 
             // handle event: user is granted reward
             window.googletag.pubads().addEventListener(
@@ -1550,14 +1485,6 @@ fg_api.prototype.rewardedadsModule = function() {
                         //M.initiateClosing();
                     }
                 );
-
-            // // handle event: video completed
-            // window.googletag.pubads().addEventListener(
-            //         "rewardedSlotCompleted",
-            //         function() {
-            //             self.log("rewarded ad video completed");
-            //         }
-            //     );
 
             // This event is fired when the creative code is injected into a slot,
             // before(!) the creative's resources are fetched.
@@ -1795,7 +1722,6 @@ fg_api.prototype.rewardedadsModule = function() {
             // enable services after slot setup & targeting to avoid race conditions
             // see https://developers.google.com/doubleclick-gpt/common_implementation_mistakes#scenario-5:-mis-ordering-calls-to-gpt
             if (!window.googletag.pubadsReady) {
-                //window.googletag.pubads().enableAsyncRendering();
                 window.googletag.enableServices();
                 self.log("enabled & initialized gpt services");
             }
@@ -3312,11 +3238,6 @@ fg_api.prototype.notifyModule = function() {
 		M.header = self.createElement("div", { class: "fg-notify-header" });
 		M.body.appendChild(M.header);
 
-		//M.gameTeaserHolder = self.createElement('div', {'class': 'fg-notify-gameteaser-holder'});
-		//M.gameTeaser = self.createElement('img', {'src': self.config.thumb});
-		//M.gameTeaserHolder.appendChild(M.gameTeaser);
-		//M.header.appendChild(M.gameTeaserHolder);
-
 		if (opts.title !== "") {
 			M.headline = self.createElement("strong", {
 				class: "fg-notify-headline"
@@ -3985,12 +3906,6 @@ fg_api.prototype.consentModule = function() {
 
 	function module() {
 		// define private vars
-		this.cookieproScriptID = 'e63a91ad-15ec-4e2d-ae18-2a0b6143ecd8';
-        var urlParams = self.getUrlParams(); 
-        this.cookieproPreview = urlParams.otpreview && (urlParams.otpreview == true);
-        if (self.debug && !this.cookieproPreview)
-            this.cookieproScriptID += '-test';
-        this.cookieproScriptURL = 'https://cookie-cdn.cookiepro.com/scripttemplates/otSDKStub.js';
         this.cmpLoaded = false;
         this.hidePlatformUIRequested = false;
         this.statusIDs = [
@@ -4088,15 +4003,6 @@ fg_api.prototype.consentModule = function() {
         window.addEventListener("OneTrustGroupsUpdated", function(event) {
             self.log("consent: OT Selected groups are now active")
         });
-
-        var firstJS = document.getElementsByTagName('script')[0];
-        var fgJS = document.createElement('script');
-        fgJS.setAttribute('type', 'text/javascript');
-        fgJS.setAttribute('charset', 'UTF-8');
-        fgJS.setAttribute('data-domain-script', M.cookieproScriptID);
-        fgJS.setAttribute('data-dLayer-ignore', 'true');
-        fgJS.src = M.cookieproScriptURL.replace('[script_id]',  M.cookieproScriptID);
-        firstJS.parentNode.insertBefore(fgJS, firstJS);
 	};
 
     module.prototype.hidePlatformUI = function() {
@@ -4945,15 +4851,7 @@ fg_api.prototype.getMoreGamesButtonImage = function(forceAbsolute) {
 	var mgb = this.__("more_games_image") || "";
 
 	if (this.banner && this.banner.isEnabled())
-		mgb = "/html5games/branding/default/More_Games600x253_transparent.png";
-
-	if (
-		forceAbsolute ||
-		(window.location.hostname.indexOf("cdn.famobi.com") === -1 &&
-			window.location.hostname.indexOf("dev.famobi.com") === -1)
-	) {
-		mgb = this.__("more_games_image_prefix") + mgb;
-	}
+		mgb = "/assets/img/More_Games600x253_transparent.png";
 
 	return mgb;
 };
@@ -8096,9 +7994,9 @@ if (typeof window !== "undefined" && !window.famobi_tracking) {
 
                 log('tracking init - user id retrieved from storage', storedUid);
 
-                const params = {
-                    'locale': (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
-                };
+                // const params = {
+                //     'locale': (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
+                // };
 				trackEvent("event/user/start", params);
 
                 return Promise.resolve(storedUid);
@@ -8250,7 +8148,7 @@ if (typeof window !== "undefined" && !window.famobi_tracking) {
             log('queuing event', eventPath, 'with data', data);
             tracking.queue.push({'eventPath': eventPath, 'data': data});
 
-            if (tracking.initializedUser)
+            // if (tracking.initializedUser)
                 processQueue();
         }
 
@@ -10856,19 +10754,19 @@ fg_api.prototype.videoadsModule = function() {
 		M.adcount = 0;
 		M.floodProtectionMap = {};
 
-		switch (M.provider) {
-			default:
-				faZepto.getScript(
-					"https://imasdk.googleapis.com/js/sdkloader/ima3.js",
-					sdkLoadedCallback,
-					function() {
+		// switch (M.provider) {
+		// 	default:
+		// 		faZepto.getScript(
+		// 			"https://imasdk.googleapis.com/js/sdkloader/ima3.js",
+		// 			sdkLoadedCallback,
+		// 			function() {
 						sdkLoadedCallback();
-					}
-				);
+		// 			}
+		// 		);
 
-				M.dfp_ad_unit_code = "/37336410/InVideo//" + self.config.aid;
-				break;
-		}
+		// 		M.dfp_ad_unit_code = "/37336410/InVideo//" + self.config.aid;
+		// 		break;
+		// }
 
 		function sdkLoadedCallback() {
 			if (typeof google != "undefined" && google.ima) {
@@ -11396,7 +11294,8 @@ fg_api.prototype.init = function () {
 			moreGamesImg.onerror = function () {
 				if (self.config.game_i18n.current) {
 					self.config.game_i18n.current.more_games_image =
-						"/html5games/branding/default/More_Games600x253_transparent.png";
+						"/assets/img/More_Games600x253_transparent.png";
+						// "/html5games/branding/default/More_Games600x253_transparent.png";
 				}
 				resolve();
 			};
