@@ -7,18 +7,11 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui"
     />
 
-    <title>8 Ball Billiards Classic | afzalimdad9</title>
-
-    <style>
-      html,
-      body {
-        background: #000000;
-      }
-    </style>
+    <title>8 Ball Billiards Classic</title>
 
     <script>
-      window.famobi_gameID = "8-ball-billiards-classic";
-      window.famobi_gameJS = [
+      window.gameID = "8-ball-billiards-classic";
+      window.gameJS = [
         "assets/src/01phaser.js",
         "assets/src/02Ball.js",
         "assets/src/03contactListener.js",
@@ -40,10 +33,14 @@
       (function (document, url, fgJS, firstJS) {
         fgJS = document.createElement("script");
         firstJS = document.getElementsByTagName("script")[0];
-        fgJS.src = url + encodeURIComponent(document.location.href);
+        fgJS.src = url + "";
         firstJS.parentNode.insertBefore(fgJS, firstJS);
-      })(document, "assets/js/gameapi/v1.js?e=");
+      })(document, "html5games/gameapi/v1.js");
     </script>
+    <link
+      rel="canonical"
+      href="https://www.crazygames.com/game/8-ball-billiards-classic"
+    />
   </head>
 
   <body>
